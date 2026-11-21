@@ -1,0 +1,24 @@
+feature,categoria,frequencia
+Gender,F,5358
+Gender,M,4769
+Education_Level,Graduate,3128
+Education_Level,High School,2013
+Education_Level,Unknown,1519
+Education_Level,Uneducated,1487
+Education_Level,College,1013
+Education_Level,Post-Graduate,516
+Education_Level,Doctorate,451
+Marital_Status,Married,4687
+Marital_Status,Single,3943
+Marital_Status,Unknown,749
+Marital_Status,Divorced,748
+Income_Category,Less than $40K,3561
+Income_Category,$40K - $60K,1790
+Income_Category,$80K - $120K,1535
+Income_Category,$60K - $80K,1402
+Income_Category,Unknown,1112
+Income_Category,$120K +,727
+Card_Category,Blue,9436
+Card_Category,Silver,555
+Card_Category,Gold,116
+Card_Category,Platinum,20

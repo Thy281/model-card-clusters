@@ -1,0 +1,4 @@
+variavel_1,variavel_2,correlacao
+Customer_Age,Months_on_book,0.7889123589930509
+Credit_Limit,Avg_Open_To_Buy,0.9959805439320011
+Total_Trans_Amt,Total_Trans_Ct,0.8071920346514365
