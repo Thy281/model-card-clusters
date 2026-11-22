@@ -1,50 +1,60 @@
 # %%
+import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, FunctionTransformer
 from sklearn.cluster import KMeans, AgglomerativeClustering
 # %%
 def get_features():
     numeric_features = [
-        "Customer_Age",
-        "Dependent_count",
-        "Months_on_book",
-        "Total_Relationship_Count",
         "Months_Inactive_12_mon",
         "Contacts_Count_12_mon",
-        "Credit_Limit",
-        "Total_Revolving_Bal",
-        "Avg_Open_To_Buy",
         "Total_Amt_Chng_Q4_Q1",
-        "Total_Trans_Amt",
         "Total_Trans_Ct",
         "Total_Ct_Chng_Q4_Q1",
         "Avg_Utilization_Ratio",
     ]
 
+    log_features = [
+        "Credit_Limit",
+        "Total_Trans_Amt",
+    ]
+
     categorical_features = [
-        "Gender",
-        "Education_Level",
-        "Marital_Status",
-        "Income_Category",
         "Card_Category",
     ]
 
-    return numeric_features, categorical_features
+    return numeric_features, log_features, categorical_features
 
 
 # %%
 def create_preprocessor():
-    numeric_features, categorical_features = get_features()
+    numeric_features, log_features, categorical_features = get_features()
+
+    log_transformer = Pipeline(
+        steps=[
+            ("log1p", FunctionTransformer(np.log1p, feature_names_out="one-to-one")),
+            ("scaler", StandardScaler()),
+        ]
+    )
 
     return ColumnTransformer(
         transformers=[
-            ("numeric", StandardScaler(), numeric_features),
+            (
+                "numeric", StandardScaler(), numeric_features
+            ),
+
+            (
+                "log_numeric",
+                log_transformer,
+                log_features,
+            ),
+
             (
                 "categorical",
                 OneHotEncoder(handle_unknown="ignore", sparse_output=False),
                 categorical_features,
-            ),
+            )
         ],
         remainder="drop",
         verbose_feature_names_out=False,
@@ -65,7 +75,8 @@ def get_models():
     return {
         "KMeans": {
             "model": KMeans(
-                random_state=42, n_init=10
+                random_state=42,
+                n_init=10
             ),
             "params": {
                 "clusterer__n_clusters": [2, 3, 4, 5, 6],

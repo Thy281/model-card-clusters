@@ -12,6 +12,20 @@ OUTPUT_PATH = PROJECT_ROOT / "data/processed/ABT.parquet"
 def build_abt():
     df = pd.read_parquet(INPUT_PATH)
 
+    features_to_drop = [
+        "Customer_Age",
+        "Dependent_count",
+        "Months_on_book",
+        "Total_Relationship_Count",
+        "Gender",
+        "Education_Level",
+        "Marital_Status",
+        "Income_Category",
+        "Total_Revolving_Bal",
+        "Avg_Open_To_Buy",
+    ]
+    df = df.drop(columns=features_to_drop)
+
     print(f"Dimensoes: {df.shape}")
 
     print("\nColunas disponiveis:")

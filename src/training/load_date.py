@@ -12,3 +12,5 @@ def load_data():
     print("Dimensoes:", df.shape)
     
     return df
+
+# %%
