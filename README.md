@@ -21,6 +21,19 @@ A base original está em `data/raw/BankChurners_clusterizacao.csv`. O fluxo gera
 
 A ABT contém 10.127 registros e é carregada por `src/training/load_date.py`.
 
+O dataset processado também pode ser armazenado na AWS S3. Quando `DATA_SOURCE=s3`, os scripts de treinamento e avaliação leem a ABT diretamente do bucket configurado por meio do `boto3`. Por padrão, o projeto usa o bucket `model-card-clusters-926274061583-sa-east-1-an`, na região `sa-east-1`, com a chave `data/processed/ABT.parquet`.
+
+Para usar o dataset no S3, configure as credenciais da AWS pelo mecanismo padrão do SDK e defina as variáveis:
+
+```bash
+export DATA_SOURCE=s3
+export S3_BUCKET=model-card-clusters-926274061583-sa-east-1-an
+export S3_KEY=data/processed/ABT.parquet
+export AWS_REGION=sa-east-1
+```
+
+Com `DATA_SOURCE=local`, o fluxo continua lendo `data/processed/ABT.parquet` do projeto.
+
 ## Features usadas
 
 O pipeline seleciona as seguintes variáveis:
@@ -113,6 +126,14 @@ pip install -r requirements.txt
 python src/preprocessing/clean.py
 python src/features/build_abt.py
 ```
+
+Depois de gerar a ABT, ela pode ser enviada para o S3 com a AWS CLI:
+
+```bash
+aws s3 cp data/processed/ABT.parquet s3://$S3_BUCKET/$S3_KEY
+```
+
+Os scripts `src/training/train.py`, `src/training/train_final_model.py`, `src/evaluation/profile_clusters.py` e `src/evaluation/visualize_clusters.py` usam a fonte definida em `DATA_SOURCE`.
 
 ### 3. Explorar a base
 
