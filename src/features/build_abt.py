@@ -33,7 +33,7 @@ def build_abt():
 
     return df
 
-# %%|
+# %%
 # Selecao das features
 
 def select_features(df):
