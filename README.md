@@ -46,6 +46,22 @@ O pipeline seleciona as seguintes variáveis:
 
 O pré-processamento aplica `StandardScaler` às variáveis numéricas, `log1p` seguido de padronização às variáveis de escala e `OneHotEncoder` à categoria do cartão.
 
+### Resultados da comparação e escolha de K
+
+Os valores abaixo foram registrados no MLflow usando a ABT de 10.127 registros. A comparação KMeans mantém `init=k-means++`, `n_init=20` e `random_state=42`; varia apenas o número de clusters.
+
+| KMeans: número de clusters | Silhouette ↑ | Davies-Bouldin ↓ | Calinski-Harabasz ↑ |
+| ---: | ---: | ---: | ---: |
+| 2 | 0,1765 | 2,0953 | 2006,83 |
+| 3 | 0,1718 | 1,7888 | 1914,67 |
+| 4 | 0,1764 | 1,6276 | 1783,50 |
+| 5 | 0,1607 | 1,7747 | 1623,11 |
+| 6 | 0,1447 | 1,7989 | 1490,15 |
+
+Como referência no mesmo K, `AgglomerativeClustering` com `linkage=ward` e distância Euclidiana obteve, para quatro clusters, Silhouette `0,1401`, Davies-Bouldin `1,7679` e Calinski-Harabasz `1493,39`.
+
+Quatro clusters foram escolhidos como um compromisso para a segmentação exploratória. Dois clusters têm Silhouette ligeiramente maior (`0,1765` contra `0,1764`) e Calinski-Harabasz maior; quatro clusters têm o menor Davies-Bouldin entre os KMeans avaliados e oferecem mais detalhe para interpretar perfis. Na comparação com Ward em K=4, KMeans também apresenta valores melhores nas três métricas. Portanto, quatro não é o vencedor de todas as métricas nem uma escolha validada por resultados de negócio: é uma opção interpretável para explorar a base.
+
 ## Modelo final
 
 O modelo final é um `KMeans` configurado com:
