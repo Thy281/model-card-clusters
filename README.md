@@ -85,6 +85,30 @@ Os experimentos calculam:
 
 O script `src/evaluation/profile_clusters.py` também imprime o tamanho de cada cluster, as medianas das features numéricas e a distribuição de `Card_Category` por cluster.
 
+### Comparar o efeito de `Card_Category`
+
+Como essa categoria é desbalanceada, o script abaixo compara o KMeans com e sem ela para K de 2 a 6. Os pares mantêm `init`, `n_init` e `random_state` iguais. Cada execução registra as métricas e os tamanhos dos grupos no MLflow; a execução sem a categoria também registra o Adjusted Rand Index entre as duas atribuições.
+
+As métricas internas são calculadas no espaço de features de cada variante. Como esses espaços são diferentes, use-as junto com o Adjusted Rand Index, os tamanhos e os perfis dos clusters; não compare isoladamente os valores de métricas como se ambos os modelos tivessem recebido exatamente as mesmas variáveis.
+
+Com o servidor MLflow iniciado, execute:
+
+```bash
+python src/training/compare_card_category.py
+```
+
+Na execução com a ABT atual, remover `Card_Category` melhorou ligeiramente as três métricas para todos os valores de K testados. O ARI permaneceu alto, indicando que as atribuições mudaram pouco:
+
+| K | Silhouette (com → sem) | Davies-Bouldin (com → sem) | Calinski-Harabasz (com → sem) | ARI entre atribuições |
+| ---: | ---: | ---: | ---: | ---: |
+| 2 | 0,1765 → 0,1794 | 2,0953 → 2,0793 | 2006,83 → 2044,81 | 0,9897 |
+| 3 | 0,1718 → 0,1752 | 1,7888 → 1,7776 | 1914,67 → 1950,56 | 0,9849 |
+| 4 | 0,1764 → 0,1804 | 1,6276 → 1,6107 | 1783,50 → 1821,94 | 0,9884 |
+| 5 | 0,1607 → 0,1634 | 1,7747 → 1,7462 | 1623,11 → 1659,30 | 0,9906 |
+| 6 | 0,1447 → 0,1485 | 1,7989 → 1,7754 | 1490,15 → 1522,80 | 0,9619 |
+
+Para K=4, os tamanhos também ficaram parecidos: com a categoria, os grupos tinham 2.704, 3.794, 907 e 2.722 clientes; sem ela, 2.706, 3.824, 901 e 2.696. Portanto, nesta comparação, `Card_Category` teve pouca influência na segmentação e sua remoção não resolveu a separação fraca. O resultado não prova que faltam dados; indica que investigar mais configurações do KMeans ou retirar variáveis importantes não é, por si só, uma solução. Uma próxima hipótese é buscar variáveis mais informativas ou observações de outros períodos, preservando as features que dão sentido à análise.
+
 ## Visualizações do modelo final
 
 O script `src/evaluation/visualize_clusters.py` treina o modelo final e gera:

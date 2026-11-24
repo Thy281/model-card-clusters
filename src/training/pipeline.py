@@ -28,7 +28,7 @@ def get_features():
 
 
 # %%
-def create_preprocessor():
+def create_preprocessor(include_card_category=True):
     numeric_features, log_features, categorical_features = get_features()
 
     log_transformer = Pipeline(
@@ -38,34 +38,35 @@ def create_preprocessor():
         ]
     )
 
-    return ColumnTransformer(
-        transformers=[
-            (
-                "numeric", StandardScaler(), numeric_features
-            ),
+    transformers = [
+        ("numeric", StandardScaler(), numeric_features),
+        ("log_numeric", log_transformer, log_features),
+    ]
 
-            (
-                "log_numeric",
-                log_transformer,
-                log_features,
-            ),
-
+    if include_card_category:
+        transformers.append(
             (
                 "categorical",
                 OneHotEncoder(handle_unknown="ignore", sparse_output=False),
                 categorical_features,
             )
-        ],
+        )
+
+    return ColumnTransformer(
+        transformers=transformers,
         remainder="drop",
         verbose_feature_names_out=False,
     )
 
 
 # %%
-def create_clustering_pipeline(clusterer):
+def create_clustering_pipeline(clusterer, include_card_category=True):
     return Pipeline(
         steps=[
-            ("preprocessor", create_preprocessor()),
+            (
+                "preprocessor",
+                create_preprocessor(include_card_category=include_card_category),
+            ),
             ("clusterer", clusterer),
         ]
     )
